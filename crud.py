@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.orm import Session
 import models
 import schemas
@@ -9,7 +10,7 @@ def get_list_of_posts(db: Session):
     return db.query(models.Post).all()
 
 def create_post(db: Session, post: schemas.PostCreate):
-    db_post = models.Post(content=post.content)
+    db_post = models.Post(content=post.content, created_at=datetime.now())
     db.add(db_post)
     db.commit()
     db.refresh(db_post)
@@ -18,6 +19,7 @@ def create_post(db: Session, post: schemas.PostCreate):
 def update_post(db: Session, post_id: int, post: schemas.PostUpdate):
     db_post = db.query(models.Post).filter(models.Post.id == post_id).first()
     db_post.content = post.content
+    db_post.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(db_post)
     return db_post
